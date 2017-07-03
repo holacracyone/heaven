@@ -13,19 +13,19 @@ module Heaven
       end
 
       def archive_link
-        @archive_link ||= api.archive_link(name_with_owner, :ref => sha)
-      end
-
-      def archive_zip
-        archive_link.gsub(/legacy\.tar\.gz/, "deploy.zip")
+        @archive_link ||= api.archive_link(name_with_owner, ref: sha, format: 'zipball')
       end
 
       def archive_path
         @archive_path ||= "#{working_directory}/#{archive_name}"
+          .tap { |filename|
+            dirname = File.dirname(filename)
+            FileUtils.mkdir_p(dirname)
+          }
       end
 
       def fetch_source_code
-        execute_and_log(["curl", archive_zip, "-o", archive_path])
+        execute_and_log(["curl", archive_link, "-o", archive_path])
       end
 
       def execute

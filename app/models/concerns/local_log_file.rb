@@ -3,9 +3,14 @@ module LocalLogFile
   extend ActiveSupport::Concern
   include DeploymentTimeout
 
+  def working_directory_base
+    "/tmp/" + Digest::SHA1.hexdigest([name_with_owner, github_token].join)
+  end
+
   def working_directory
-    @working_directory ||= "/tmp/" + \
-      Digest::SHA1.hexdigest([name_with_owner, github_token].join)
+    @working_directory ||= working_directory_base.tap do |dirname|
+      FileUtils.mkdir_p(dirname)
+    end
   end
 
   def checkout_directory

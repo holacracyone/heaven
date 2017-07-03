@@ -11,6 +11,10 @@ module WebhookValidations
   end
 
   def valid_incoming_webhook_address?
+    if ENV["HEAVEN_KUBERNETES"]
+      Rails.logger.debug "running from within Kubernetes, allowing non-Github ip addresses"
+      return true
+    end
     if Octokit.api_endpoint == "https://api.github.com/"
       GithubSourceValidator.new(request.ip).valid?
     else
