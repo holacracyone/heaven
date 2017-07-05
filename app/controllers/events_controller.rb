@@ -3,6 +3,7 @@ class EventsController < ApplicationController
   include WebhookValidations
 
   before_filter :verify_incoming_webhook_address!
+  before_filter :verify_secret!
   skip_before_filter :verify_authenticity_token, :only => [:create]
 
   def create
